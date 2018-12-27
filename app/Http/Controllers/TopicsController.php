@@ -6,11 +6,13 @@ use App\Models\Topic;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TopicRequest;
-
+use App\Models\Category;
+use Auth;
 class TopicsController extends Controller
 {
     public function __construct()
-    {
+    {	
+    	//对除了 index() 和 show() 以外的方法使用 auth 中间件进行认证
         $this->middleware('auth', ['except' => ['index', 'show']]);
     }
 
@@ -30,14 +32,22 @@ class TopicsController extends Controller
         return view('topics.show', compact('topic'));
     }
 
+    //发帖子表单
 	public function create(Topic $topic)
-	{
-		return view('topics.create_and_edit', compact('topic'));
+	{	
+		//获取话题分类
+		$categories = Category::all();
+		return view('topics.create_and_edit', compact('topic','categories'));
 	}
 
-	public function store(TopicRequest $request)
+	//对发布帖子表单进行数据处理
+	public function store(TopicRequest $request,Topic $topic)
 	{
-		$topic = Topic::create($request->all());
+		//$topic = Topic::create($request->all());
+		//echo '<pre>';print_r($request->all());echo Auth::id();exit;
+		$topic->fill($request->all());
+		$topic->user_id = Auth::id();
+		$topic->save();
 		return redirect()->route('topics.show', $topic->id)->with('message', 'Created successfully.');
 	}
 
