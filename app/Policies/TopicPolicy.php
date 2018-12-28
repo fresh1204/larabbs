@@ -14,8 +14,9 @@ class TopicPolicy extends Policy
         //return true;
     }
 
+    //只允许作者删除话题
     public function destroy(User $user, Topic $topic)
     {
-        return true;
+        return $topic->user_id == $user->id;
     }
 }

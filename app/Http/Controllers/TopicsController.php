@@ -75,9 +75,12 @@ class TopicsController extends Controller
 		return redirect()->route('topics.show', $topic->id)->with('success', '更新成功.');
 	}
 
+	//删除帖子
 	public function destroy(Topic $topic)
 	{
+		//授权删除
 		$this->authorize('destroy', $topic);
+		
 		$topic->delete();
 
 		return redirect()->route('topics.index')->with('success', '删除成功.');
