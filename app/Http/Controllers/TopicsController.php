@@ -52,15 +52,24 @@ class TopicsController extends Controller
 		return redirect()->route('topics.show', $topic->id)->with('success', '成功创建话题.');
 	}
 
+	//编辑帖子表单
 	public function edit(Topic $topic)
 	{
+		//授权判断
         $this->authorize('update', $topic);
-		return view('topics.create_and_edit', compact('topic'));
+        
+        //获取话题分类列表
+        $categories = Category::all();
+
+		return view('topics.create_and_edit', compact('topic','categories'));
 	}
 
+	//对编辑表单提交的数据进行更新处理
 	public function update(TopicRequest $request, Topic $topic)
 	{
+		//授权判断
 		$this->authorize('update', $topic);
+
 		$topic->update($request->all());
 
 		return redirect()->route('topics.show', $topic->id)->with('success', '更新成功.');
